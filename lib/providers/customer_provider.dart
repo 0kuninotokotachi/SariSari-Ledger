@@ -11,6 +11,12 @@ class CustomerProvider extends ChangeNotifier {
 
   Isar get _isar => DatabaseService.instance;
 
+  double get totalUtang =>
+      customers.fold(0.0, (sum, customer) => sum + customer.totalUtang);
+
+  int get customersWithUtangCount =>
+      customers.where((customer) => customer.totalUtang > 0).length;
+
   Future<void> loadCustomers() async {
     customers = await _isar.customers.where().sortByName().findAll();
     notifyListeners();
