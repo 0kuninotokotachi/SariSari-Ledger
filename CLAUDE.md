@@ -41,5 +41,9 @@ lib/
 - **Performance**: Keep widget trees clean, avoid unnecessary rebuilds, and minimize external packages.
 
 ## Agent Guidelines (for Claude Code)
+- Develop this app in **Egnlish**.
 - Write commit messages in **English**.
 - When creating Isar models, remember to remind the user to run `build_runner`.
+- Maintain all application specifications, requirements, and feature designs centrally inside the `docs/` directory.
+- When adding or modifying features, always update the relevant specification files in `docs/` to keep them up to date.
+- Write docs in **English** and **Markdown**.
