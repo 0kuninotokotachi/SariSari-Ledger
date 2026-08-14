@@ -1,0 +1,116 @@
+# Test Infrastructure
+
+Setup notes that the cases in [utang-management.md](utang-management.md)
+depend on. Read this before writing the first provider or screen test.
+
+## The core problem: no dependency injection for Isar
+
+`CustomerProvider` and `TransactionProvider` both read `DatabaseService.instance`
+directly:
+
+```dart
+Isar get _isar => DatabaseService.instance;
+```
+
+`DatabaseService.instance` is a `static late final Isar` set by
+`DatabaseService.init()`, which `main.dart` calls once at app startup. There
+is no seam to inject a fake or mock — any test that exercises a provider
+method touching `_isar` needs `DatabaseService.instance` to already hold a
+real, open Isar instance with `CustomerSchema` and `TransactionSchema`.
+
+This means "unit" tests for the providers are closer to lightweight
+integration tests: they hit a real Isar database on disk (in a temp
+directory), not a mock. That's acceptable — Isar is fast and file-based —
+but it has consequences for setup/teardown, listed below.
+
+## Required: a shared test helper
+
+Add `test/helpers/isar_test_helper.dart`:
+
+- Opens an Isar instance with `[CustomerSchema, TransactionSchema]` in a
+  fresh temp directory (e.g. via `package:path_provider`'s test fallback, or
+  `Directory.systemTemp.createTempSync()`), and assigns it to
+  `DatabaseService.instance`.
+- Exposes a `setUpIsar()` to call from `setUp()` and a `tearDownIsar()` to
+  call from `tearDown()` that closes the instance and deletes the temp
+  directory, so tests don't leak state or files into each other.
+- Isar allows only one open instance per name+directory; give each test its
+  own temp directory (don't reuse a fixed path) so tests can run in
+  parallel/isolation without colliding.
+
+Every `providers/*_test.dart` file should call `setUpIsar()`/`tearDownIsar()`
+around each test (not once per file) — provider tests need a clean database
+per case, since `CustomerProvider.customers` and utang balances accumulate
+state across writes.
+
+## Native binary requirement
+
+Isar needs its native core library loaded. Tests that touch
+`DatabaseService.instance` must run via `flutter test` (which handles this
+automatically for supported platforms), not `dart test`. If tests run in CI
+on a platform without prebuilt Isar binaries, call
+`Isar.initializeIsarCore(download: true)` (or equivalent) once in a global
+test setup before any test opens an instance.
+
+## Widget test conventions
+
+Follow the existing pattern in `test/widget_test.dart`:
+
+```dart
+await tester.pumpWidget(
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => CustomerProvider()),
+      ChangeNotifierProvider(create: (_) => TransactionProvider()),
+    ],
+    child: const MaterialApp(home: /* screen under test */),
+  ),
+);
+```
+
+Notes:
+
+- The current `widget_test.dart` HomeScreen case never calls
+  `loadCustomers()`, so it only works because `CustomerProvider.customers`
+  starts as `[]` — it never touches Isar. Any widget test that needs seeded
+  customers/transactions **does** need `DatabaseService.instance` set up
+  (via the helper above) and must `await customerProvider.loadCustomers()`
+  (and/or seed via `TransactionProvider`) before pumping, then
+  `await tester.pumpAndSettle()`.
+- Screens that navigate (`Navigator.push`) need `await tester.pumpAndSettle()`
+  after the tap to let the route animation finish before asserting on the
+  new screen.
+- Screens that open a `showDatePicker` dialog need `pumpAndSettle()` after
+  tapping the date field, then locate the picker's "OK" button
+  (`find.text('OK')` in Material's default date picker) to confirm a date.
+- `AddCustomerScreen` and the dialogs in `CustomerDetailScreen` use
+  `double.tryParse`/`double.parse` on raw `TextEditingController` text —
+  enter amounts via `tester.enterText(find.byType(TextFormField).at(n), '100')`
+  rather than relying on default field values.
+
+## Suggested file layout
+
+```
+test/
+├── TEST_PLAN.md
+├── plans/
+│   ├── utang-management.md
+│   └── test-infrastructure.md
+├── helpers/
+│   └── isar_test_helper.dart
+├── providers/
+│   ├── customer_provider_test.dart
+│   └── transaction_provider_test.dart
+├── screens/
+│   ├── home_screen_test.dart
+│   ├── add_customer_screen_test.dart
+│   ├── customer_list_screen_test.dart
+│   └── customer_detail_screen_test.dart
+└── widgets/
+    ├── customer_tile_test.dart
+    ├── transaction_tile_test.dart
+    └── utang_summary_card_test.dart
+```
+
+`widget_test.dart` at the root can stay as-is or be moved into `screens/` as
+`home_screen_test.dart` once it's expanded per the plan.
