@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../models/customer.dart';
 
 class CustomerTile extends StatelessWidget {
-  const CustomerTile({super.key, required this.customer});
+  const CustomerTile({super.key, required this.customer, this.onTap});
 
   final Customer customer;
+  final VoidCallback? onTap;
 
   String get _formattedUtang => '₱${customer.totalUtang.toStringAsFixed(2)}';
 
@@ -13,6 +14,7 @@ class CustomerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasUtang = customer.totalUtang > 0;
     return ListTile(
+      onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       title: Text(
         customer.name,
