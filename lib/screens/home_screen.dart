@@ -4,42 +4,12 @@ import 'package:provider/provider.dart';
 import '../providers/customer_provider.dart';
 import '../widgets/customer_tile.dart';
 import '../widgets/utang_summary_card.dart';
+import 'add_customer_screen.dart';
+import 'customer_detail_screen.dart';
+import 'customer_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  Future<void> _showAddCustomerDialog(BuildContext context) async {
-    final nameController = TextEditingController();
-    final provider = context.read<CustomerProvider>();
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Add Customer'),
-        content: TextField(
-          controller: nameController,
-          autofocus: true,
-          style: const TextStyle(fontSize: 20),
-          decoration: const InputDecoration(labelText: 'Name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isEmpty) return;
-              await provider.addCustomer(name);
-              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +23,25 @@ class HomeScreen extends StatelessWidget {
             customersWithUtang: provider.customersWithUtangCount,
           );
 
+          final listNavTile = Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.list_alt),
+                title: const Text('View Customer List', style: TextStyle(fontSize: 18)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const CustomerListScreen()),
+                ),
+              ),
+            ),
+          );
+
           if (provider.customers.isEmpty) {
             return Column(
               children: [
                 summary,
+                listNavTile,
                 const Expanded(
                   child: Center(
                     child: Text(
@@ -73,6 +58,8 @@ class HomeScreen extends StatelessWidget {
           return Column(
             children: [
               summary,
+              listNavTile,
+              const SizedBox(height: 8),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Align(
@@ -88,7 +75,15 @@ class HomeScreen extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: provider.customers.length,
                   itemBuilder: (context, index) {
-                    return CustomerTile(customer: provider.customers[index]);
+                    final customer = provider.customers[index];
+                    return CustomerTile(
+                      customer: customer,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CustomerDetailScreen(customerId: customer.id),
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -97,7 +92,9 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddCustomerDialog(context),
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const AddCustomerScreen()),
+        ),
         icon: const Icon(Icons.person_add),
         label: const Text('Add Customer'),
       ),
