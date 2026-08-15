@@ -62,9 +62,10 @@ File references show where each case belongs.
 ### `reorderPinnedCustomers(oldIndex, newIndex)`
 - [ ] Moving a customer earlier shifts the customers between old and new
       position correctly.
-- [ ] Moving a customer later (`newIndex > oldIndex`) correctly accounts
-      for `ReorderableListView`'s off-by-one convention (result matches the
-      intended final order, not shifted by one).
+- [ ] Moving a customer later (`newIndex > oldIndex`) inserts it at exactly
+      `newIndex` in the resulting list (matches
+      `ReorderableListView.onReorderItem`'s "already adjusted" index
+      convention — no further off-by-one shift applied).
 - [ ] A single pinned customer reordering with itself is a no-op that
       doesn't error.
 - [ ] Does not modify any non-pinned customer's data.

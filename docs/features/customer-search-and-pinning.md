@@ -45,9 +45,9 @@ already does.
   - `unpinCustomer(customerId)` — unpins a customer and compacts the
     remaining pinned customers' `pinOrder` values back to `0..n-1`.
   - `reorderPinnedCustomers(oldIndex, newIndex)` — reorders the pinned row.
-    Takes `ReorderableListView.onReorder`'s raw indices (including its
-    "moving later shifts by one" convention) directly — index adjustment
-    happens here, not in the widget layer.
+    Takes `ReorderableListView.onReorderItem`'s indices directly; `newIndex`
+    is already the target position after the dragged item is removed, so no
+    further adjustment happens in the widget layer.
   - `PinLimitExceededException` — thrown by `pinCustomer` when the cap is
     already reached; carries the `limit` that was hit.
 

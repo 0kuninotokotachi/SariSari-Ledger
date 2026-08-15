@@ -261,15 +261,14 @@ class CustomerProvider extends ChangeNotifier {
   }
 
   /// Reorders the pinned row. [oldIndex]/[newIndex] are passed straight
-  /// through from `ReorderableListView.onReorder`, including its raw
-  /// "moving later shifts by one" convention.
+  /// through from `ReorderableListView.onReorderItem`, whose [newIndex] is
+  /// already the target position after the item at [oldIndex] is removed
+  /// (no further off-by-one adjustment needed here).
   Future<void> reorderPinnedCustomers(int oldIndex, int newIndex) async {
     final pinned = List<Customer>.from(pinnedCustomers);
     if (oldIndex < 0 || oldIndex >= pinned.length) return;
-    var target = newIndex;
-    if (target > oldIndex) target -= 1;
     final moved = pinned.removeAt(oldIndex);
-    pinned.insert(target.clamp(0, pinned.length), moved);
+    pinned.insert(newIndex.clamp(0, pinned.length), moved);
 
     await _isar.writeTxn(() async {
       for (var i = 0; i < pinned.length; i++) {
