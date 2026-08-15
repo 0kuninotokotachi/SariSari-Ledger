@@ -21,4 +21,9 @@ class Customer {
   double totalUtang = 0.0;
 
   late DateTime createdAt;
+
+  /// Position among pinned customers (0 = first). `null` means not pinned.
+  /// Kept contiguous (0..n-1) by CustomerProvider whenever a customer is
+  /// unpinned or the pinned row is reordered.
+  int? pinOrder;
 }

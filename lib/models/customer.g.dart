@@ -52,8 +52,13 @@ const CustomerSchema = CollectionSchema(
       name: r'phoneNumber',
       type: IsarType.string,
     ),
-    r'totalUtang': PropertySchema(
+    r'pinOrder': PropertySchema(
       id: 7,
+      name: r'pinOrder',
+      type: IsarType.long,
+    ),
+    r'totalUtang': PropertySchema(
+      id: 8,
       name: r'totalUtang',
       type: IsarType.double,
     )
@@ -139,7 +144,8 @@ void _customerSerialize(
   writer.writeString(offsets[4], object.name);
   writer.writeString(offsets[5], object.notes);
   writer.writeString(offsets[6], object.phoneNumber);
-  writer.writeDouble(offsets[7], object.totalUtang);
+  writer.writeLong(offsets[7], object.pinOrder);
+  writer.writeDouble(offsets[8], object.totalUtang);
 }
 
 Customer _customerDeserialize(
@@ -157,7 +163,8 @@ Customer _customerDeserialize(
   object.name = reader.readString(offsets[4]);
   object.notes = reader.readStringOrNull(offsets[5]);
   object.phoneNumber = reader.readStringOrNull(offsets[6]);
-  object.totalUtang = reader.readDouble(offsets[7]);
+  object.pinOrder = reader.readLongOrNull(offsets[7]);
+  object.totalUtang = reader.readDouble(offsets[8]);
   return object;
 }
 
@@ -183,6 +190,8 @@ P _customerDeserializeProp<P>(
     case 6:
       return (reader.readStringOrNull(offset)) as P;
     case 7:
+      return (reader.readLongOrNull(offset)) as P;
+    case 8:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1346,6 +1355,75 @@ extension CustomerQueryFilter
     });
   }
 
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'pinOrder',
+      ));
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'pinOrder',
+      ));
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'pinOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'pinOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'pinOrder',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterFilterCondition> pinOrderBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'pinOrder',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Customer, Customer, QAfterFilterCondition> totalUtangEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -1500,6 +1578,18 @@ extension CustomerQuerySortBy on QueryBuilder<Customer, Customer, QSortBy> {
     });
   }
 
+  QueryBuilder<Customer, Customer, QAfterSortBy> sortByPinOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinOrder', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterSortBy> sortByPinOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinOrder', Sort.desc);
+    });
+  }
+
   QueryBuilder<Customer, Customer, QAfterSortBy> sortByTotalUtang() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalUtang', Sort.asc);
@@ -1611,6 +1701,18 @@ extension CustomerQuerySortThenBy
     });
   }
 
+  QueryBuilder<Customer, Customer, QAfterSortBy> thenByPinOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinOrder', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Customer, Customer, QAfterSortBy> thenByPinOrderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'pinOrder', Sort.desc);
+    });
+  }
+
   QueryBuilder<Customer, Customer, QAfterSortBy> thenByTotalUtang() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalUtang', Sort.asc);
@@ -1674,6 +1776,12 @@ extension CustomerQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Customer, Customer, QDistinct> distinctByPinOrder() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'pinOrder');
+    });
+  }
+
   QueryBuilder<Customer, Customer, QDistinct> distinctByTotalUtang() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'totalUtang');
@@ -1728,6 +1836,12 @@ extension CustomerQueryProperty
   QueryBuilder<Customer, String?, QQueryOperations> phoneNumberProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'phoneNumber');
+    });
+  }
+
+  QueryBuilder<Customer, int?, QQueryOperations> pinOrderProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'pinOrder');
     });
   }
 
