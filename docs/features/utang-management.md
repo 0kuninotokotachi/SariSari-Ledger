@@ -17,6 +17,7 @@ Tracks how much each customer owes the store (utang), and the history of loans a
 | `notes` | `String?` | Optional free-text memo for the store owner (e.g. "pays every payday"). |
 | `totalUtang` | `double` | Denormalized running balance, kept in sync with `Transaction` writes (see below). |
 | `createdAt` | `DateTime` | Set to the date of the *initial* loan when the customer is created (see "Created date" below) — not necessarily "now". |
+| `pinOrder` | `int?` | Position among pinned customers (`null` = unpinned). See [Customer Search & Pinning](customer-search-and-pinning.md) for behavior. |
 
 ### `Transaction` (`lib/models/transaction.dart`)
 

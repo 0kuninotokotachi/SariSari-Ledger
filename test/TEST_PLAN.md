@@ -29,6 +29,10 @@ Update the relevant plan whenever a feature's behavior changes, the same way
   before the above cases can be written (Isar test instances, provider
   wiring, widget test helpers). Read this first if `DatabaseService.instance`
   isn't initialized yet in a test.
+- [Customer Search & Pinning](plans/customer-search-and-pinning.md) —
+  search/filter/sort on the Customer List screen, and pinning favorite
+  customers to the Home dashboard. Covers
+  `docs/features/customer-search-and-pinning.md`.
 
 Daily Sales Logging has no plan yet — add `plans/daily-sales-logging.md` once
 `docs/features/daily-sales-logging.md` exists.
