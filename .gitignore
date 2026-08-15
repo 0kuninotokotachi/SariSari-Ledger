@@ -113,6 +113,13 @@ unlinked_spec.ds
 # Coverage
 coverage/
 
+# Isar native core, auto-downloaded to the project root by
+# Isar.initializeIsarCore(download: true) when running `flutter test` on
+# desktop (see test/helpers/isar_test_helper.dart).
+/isar.dll
+/libisar.so
+/libisar.dylib
+
 # Symbols
 app.*.symbols
 

@@ -31,17 +31,17 @@ Add `test/helpers/isar_test_helper.dart`:
   fresh temp directory (e.g. via `package:path_provider`'s test fallback, or
   `Directory.systemTemp.createTempSync()`), and assigns it to
   `DatabaseService.instance`.
-- Exposes a `setUpIsar()` to call from `setUp()` and a `tearDownIsar()` to
-  call from `tearDown()` that closes the instance and deletes the temp
-  directory, so tests don't leak state or files into each other.
-- Isar allows only one open instance per name+directory; give each test its
-  own temp directory (don't reuse a fixed path) so tests can run in
-  parallel/isolation without colliding.
+- Exposes a `setUpIsar()` to call from `setUpAll()` and a `tearDownIsar()` to
+  call from `tearDownAll()` that closes the instance and deletes the temp
+  directory, so tests don't leak files into each other.
+- Also exposes a `clearIsar()` to call from `setUp()`, which wipes both
+  collections without reopening Isar.
 
-Every `providers/*_test.dart` file should call `setUpIsar()`/`tearDownIsar()`
-around each test (not once per file) — provider tests need a clean database
-per case, since `CustomerProvider.customers` and utang balances accumulate
-state across writes.
+**Note:** `DatabaseService.instance` is `late final`, so it can only be
+*assigned* once per test-file isolate — `setUpIsar()` must run once per file
+(`setUpAll`), not once per test. Use `clearIsar()` in `setUp()` to reset data
+between individual test cases instead; `CustomerProvider.customers` and
+utang balances otherwise accumulate state across writes within a file.
 
 ## Native binary requirement
 
@@ -79,7 +79,26 @@ Notes:
   `await tester.pumpAndSettle()`.
 - Screens that navigate (`Navigator.push`) need `await tester.pumpAndSettle()`
   after the tap to let the route animation finish before asserting on the
-  new screen.
+  new screen. **Exception: navigating to `CustomerDetailScreen`.** Its
+  transaction history shows an indeterminate `CircularProgressIndicator`
+  while its `FutureBuilder` is pending, which schedules animation frames
+  forever — `pumpAndSettle()` times out. Use bounded pumps instead:
+  `await tester.pump(); await tester.pump(const Duration(milliseconds: 300));`
+  (enough to process the tap and finish the push transition, without waiting
+  for "no more frames").
+- **Known unsolved issue (Windows): navigating to `CustomerDetailScreen` in a
+  widget test, then letting the test/file end while its transaction-history
+  Isar query is still in flight, reliably deadlocks** — observed both with
+  bounded pumps and with `tester.runAsync()` attempts to flush the pending
+  query, and independent of whether `DatabaseService.instance.close()` is
+  called with `deleteFromDisk: true`. The hang shows as zero CPU movement on
+  the `flutter_tester`/`dartaotruntime` processes (check via
+  `Get-Process | Select ProcessName,Id,CPU` twice, a few seconds apart, on
+  Windows) rather than a timeout message, so it's easy to mistake for normal
+  slowness. Until root-caused, avoid widget tests that navigate into
+  `CustomerDetailScreen`; test its own behavior directly in
+  `customer_detail_screen_test.dart` instead (still unwritten as of this
+  note), where per-test Isar setup/teardown can be tuned in isolation.
 - Screens that open a `showDatePicker` dialog need `pumpAndSettle()` after
   tapping the date field, then locate the picker's "OK" button
   (`find.text('OK')` in Material's default date picker) to confirm a date.
