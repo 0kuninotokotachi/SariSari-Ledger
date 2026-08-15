@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/customer_provider.dart';
 import '../widgets/customer_tile.dart';
+import '../widgets/pinned_customers_row.dart';
 import '../widgets/utang_summary_card.dart';
 import 'add_customer_screen.dart';
 import 'customer_detail_screen.dart';
@@ -55,10 +56,38 @@ class HomeScreen extends StatelessWidget {
             );
           }
 
+          final pinned = provider.pinnedCustomers;
+
           return Column(
             children: [
               summary,
               listNavTile,
+              if (pinned.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Pinned',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: PinnedCustomersRow(
+                    pinnedCustomers: pinned,
+                    onReorder: provider.reorderPinnedCustomers,
+                    onTapCustomer: (customer) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CustomerDetailScreen(customerId: customer.id),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
