@@ -230,6 +230,26 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     await _reloadAll();
   }
 
+  Future<void> _togglePin(Customer customer) async {
+    final provider = context.read<CustomerProvider>();
+    try {
+      if (customer.pinOrder != null) {
+        await provider.unpinCustomer(customer.id);
+      } else {
+        await provider.pinCustomer(customer.id);
+      }
+    } on PinLimitExceededException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'You can only pin up to ${e.limit} customers. Unpin one first.',
+          ),
+        ),
+      );
+    }
+  }
+
   String _formattedUtang(double amount) => '₱${amount.toStringAsFixed(2)}';
 
   @override
@@ -251,6 +271,13 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
           appBar: AppBar(
             title: Text(customer.name),
             actions: [
+              IconButton(
+                icon: Icon(
+                  customer.pinOrder != null ? Icons.push_pin : Icons.push_pin_outlined,
+                ),
+                tooltip: customer.pinOrder != null ? 'Unpin customer' : 'Pin customer',
+                onPressed: () => _togglePin(customer),
+              ),
               IconButton(
                 icon: const Icon(Icons.edit),
                 tooltip: 'Edit contact info',
