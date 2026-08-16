@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:sarisari_ledger/models/customer.dart';
 import 'package:sarisari_ledger/models/transaction.dart';
 import 'package:sarisari_ledger/services/database_service.dart';

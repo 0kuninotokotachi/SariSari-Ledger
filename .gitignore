@@ -117,6 +117,7 @@ coverage/
 # Isar.initializeIsarCore(download: true) when running `flutter test` on
 # desktop (see test/helpers/isar_test_helper.dart).
 /isar.dll
+/libisar.dll
 /libisar.so
 /libisar.dylib
 
