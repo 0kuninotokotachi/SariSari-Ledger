@@ -18,6 +18,9 @@ class PinnedCustomerCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
+        // Long-pressing to start a drag shouldn't leave the tap-down
+        // highlight showing underneath the drag's own lift animation.
+        highlightColor: Colors.transparent,
         child: SizedBox(
           width: 140,
           child: Padding(

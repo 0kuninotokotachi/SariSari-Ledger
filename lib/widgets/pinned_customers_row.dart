@@ -28,6 +28,37 @@ class PinnedCustomersRow extends StatelessWidget {
         buildDefaultDragHandles: false,
         itemCount: pinnedCustomers.length,
         onReorderItem: onReorder,
+        proxyDecorator: (child, index, animation) {
+          // The default proxyDecorator wraps the dragged item in an opaque,
+          // elevated Material, which has two problems: the opaque fill
+          // paints over the Card's own margin and this row's item padding
+          // as a visible white box, and Material's physically-modeled
+          // elevation shadow is biased downward (more so at higher
+          // elevation), so it visibly sits lower than the Card's own resting
+          // shadow. Use a plain, unoffset BoxShadow instead so the "lifted"
+          // shadow stays centered under the card, in the same place as its
+          // resting shadow.
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (context, _) {
+              final double t = Curves.easeInOut.transform(animation.value);
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3 * t),
+                      blurRadius: 12 * t,
+                      spreadRadius: 1 * t,
+                    ),
+                  ],
+                ),
+                child: child,
+              );
+            },
+            child: child,
+          );
+        },
         itemBuilder: (context, index) {
           final customer = pinnedCustomers[index];
           return ReorderableDelayedDragStartListener(

@@ -76,12 +76,20 @@ No new screens or routes. Existing screens gained:
   not). Existing call sites are unaffected since the params default off.
 - `PinnedCustomerCard` (`lib/widgets/pinned_customer_card.dart`) — new,
   fixed-width card for the dashboard's pinned row: name + balance, colored
-  red/green like `CustomerTile`.
+  red/green like `CustomerTile`. Its `InkWell` sets `highlightColor:
+  transparent` so starting a long-press drag doesn't leave a flat gray
+  tap-down highlight showing underneath the drag's own lift shadow.
 - `PinnedCustomersRow` (`lib/widgets/pinned_customers_row.dart`) — new,
   wraps `ReorderableListView.builder(scrollDirection: Axis.horizontal)`
   around `PinnedCustomerCard`s. Presentational only — forwards
   `onReorder`'s raw indices to the caller, which wires them to
-  `CustomerProvider.reorderPinnedCustomers`.
+  `CustomerProvider.reorderPinnedCustomers`. Overrides `proxyDecorator` to
+  replace the default opaque, elevated `Material` — which paints over the
+  `Card`'s own margin and this row's item padding as a visible white box, and
+  whose physically-modeled elevation shadow is biased downward — with a
+  transparent `DecoratedBox` using an unoffset `BoxShadow`, so the dragged
+  card lifts without a background box and its shadow stays centered under
+  it, in the same place as its resting shadow.
 - `CustomerSearchBar` (`lib/widgets/customer_search_bar.dart`) — new,
   search-by-name-or-phone text field with a clear button.
 - `CustomerFilterBar` (`lib/widgets/customer_filter_bar.dart`) — new,
