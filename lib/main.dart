@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/customer_provider.dart';
+import 'providers/transaction_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/database_service.dart';
 
@@ -16,8 +17,11 @@ class SariSariLedgerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CustomerProvider()..loadCustomers(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CustomerProvider()..loadCustomers()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
+      ],
       child: MaterialApp(
         title: 'SariSari Ledger',
         theme: ThemeData(

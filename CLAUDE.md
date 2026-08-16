@@ -39,7 +39,11 @@ lib/
 - **UI/UX**: Keep forms simple, use large readable fonts and touch targets (optimized for 30-60 age group).
 - **Currency**: Format money in Philippine Peso (`₱` or `PHP`).
 - **Performance**: Keep widget trees clean, avoid unnecessary rebuilds, and minimize external packages.
+- Develop this app in **English**.
 
 ## Agent Guidelines (for Claude Code)
 - Write commit messages in **English**.
 - When creating Isar models, remember to remind the user to run `build_runner`.
+- Maintain all application specifications, requirements, and feature designs centrally inside the `docs/` directory.
+- When adding or modifying features, always update the relevant specification files in `docs/` to keep them up to date.
+- Write docs in **English** and **Markdown**.

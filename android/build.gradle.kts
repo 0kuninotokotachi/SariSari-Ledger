@@ -19,12 +19,12 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
-// Workaround for older packages (e.g. isar_flutter_libs 3.1.0+1) that don't
-// declare an Android `namespace`, which recent AGP versions require, and that
-// also pin an outdated compileSdk incompatible with current androidx
-// transitive dependencies. Backfills the namespace from the package's own
-// AndroidManifest.xml, and matches compileSdk to :app's. Uses reflection so
-// this compiles even though AGP classes aren't on this script's classpath.
+// Workaround for older packages that don't declare an Android `namespace`,
+// which recent AGP versions require, and that also pin an outdated
+// compileSdk incompatible with current androidx transitive dependencies.
+// Backfills the namespace from the package's own AndroidManifest.xml, and
+// matches compileSdk to :app's. Uses reflection so this compiles even though
+// AGP classes aren't on this script's classpath.
 fun getAppCompileSdk(rootProject: Project): Int? {
     val appProject = rootProject.findProject(":app") ?: return null
     val androidExt = appProject.extensions.findByName("android") ?: return null
