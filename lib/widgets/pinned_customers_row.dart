@@ -30,7 +30,7 @@ class PinnedCustomersRow extends StatelessWidget {
         onReorderItem: onReorder,
         itemBuilder: (context, index) {
           final customer = pinnedCustomers[index];
-          return ReorderableDragStartListener(
+          return ReorderableDelayedDragStartListener(
             key: ValueKey(customer.id),
             index: index,
             child: Padding(
