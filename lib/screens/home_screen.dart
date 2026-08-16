@@ -69,7 +69,7 @@ class HomeScreen extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Pinned',
+                      'Pinned customers',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ),

@@ -45,7 +45,7 @@ void main() {
   testWidgets('no Pinned section rendered when nobody is pinned', (tester) async {
     await _pumpHome(tester, [_customer(1, 'Ana')]);
 
-    expect(find.text('Pinned'), findsNothing);
+    expect(find.text('Pinned customers'), findsNothing);
     expect(find.byType(PinnedCustomersRow), findsNothing);
   });
 
@@ -57,7 +57,7 @@ void main() {
       _customer(3, 'Cy'), // not pinned
     ]);
 
-    expect(find.text('Pinned'), findsOneWidget);
+    expect(find.text('Pinned customers'), findsOneWidget);
     expect(find.byType(PinnedCustomerCard), findsNWidgets(2));
     final row = tester.widget<PinnedCustomersRow>(find.byType(PinnedCustomersRow));
     expect(row.pinnedCustomers.map((c) => c.name).toList(), ['Bea', 'Ana']);

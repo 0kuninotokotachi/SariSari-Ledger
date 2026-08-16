@@ -57,10 +57,10 @@ No new screens or routes. Existing screens gained:
 
 - **`CustomerListScreen`** — a search bar and a filter/sort bar above the
   list, and a pin toggle on each `CustomerTile`.
-- **`HomeScreen`** — a horizontal, drag-to-reorder "Pinned" row between the
-  "View Customer List" tile and the "Customers" section, shown only when
-  `pinnedCustomers` is non-empty. The full customer list below it is
-  unchanged — pinned customers still also appear there.
+- **`HomeScreen`** — a horizontal, drag-to-reorder "Pinned customers" row
+  between the "View Customer List" tile and the "Customers" section, shown
+  only when `pinnedCustomers` is non-empty. The full customer list below it
+  is unchanged — pinned customers still also appear there.
 - **`CustomerDetailScreen`** — a pin/unpin icon in the `AppBar`, next to the
   existing edit-contact-info icon.
 
