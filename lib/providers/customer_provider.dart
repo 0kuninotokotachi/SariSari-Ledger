@@ -270,6 +270,15 @@ class CustomerProvider extends ChangeNotifier {
     final moved = pinned.removeAt(oldIndex);
     pinned.insert(newIndex.clamp(0, pinned.length), moved);
 
+    // Apply the new order to the in-memory objects (shared with `customers`)
+    // and notify immediately, so the row reflects the drop the instant it
+    // happens instead of snapping back to the pre-drag order while the DB
+    // write below is still in flight.
+    for (var i = 0; i < pinned.length; i++) {
+      pinned[i].pinOrder = i;
+    }
+    notifyListeners();
+
     await _isar.writeTxn(() async {
       for (var i = 0; i < pinned.length; i++) {
         final customer = await _isar.customers.get(pinned[i].id);

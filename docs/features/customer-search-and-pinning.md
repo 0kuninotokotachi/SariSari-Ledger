@@ -47,7 +47,11 @@ already does.
   - `reorderPinnedCustomers(oldIndex, newIndex)` — reorders the pinned row.
     Takes `ReorderableListView.onReorderItem`'s indices directly; `newIndex`
     is already the target position after the dragged item is removed, so no
-    further adjustment happens in the widget layer.
+    further adjustment happens in the widget layer. Applies the new
+    `pinOrder` values to the in-memory `Customer` objects and calls
+    `notifyListeners()` *before* awaiting the Isar write, so the row reflects
+    the drop immediately instead of snapping back to the pre-drag order while
+    the write is in flight.
   - `PinLimitExceededException` — thrown by `pinCustomer` when the cap is
     already reached; carries the `limit` that was hit.
 
