@@ -26,6 +26,19 @@ class _CustomerSearchBarState extends State<CustomerSearchBar> {
   }
 
   @override
+  void didUpdateWidget(covariant CustomerSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Resync when the query changes externally (e.g. a "Clear Search &
+    // Filters" action resetting CustomerProvider.searchQuery directly) —
+    // during normal typing, onChanged already keeps the provider and this
+    // controller in lockstep, so this is a no-op then.
+    if (widget.initialQuery != oldWidget.initialQuery &&
+        widget.initialQuery != _controller.text) {
+      _controller.text = widget.initialQuery;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

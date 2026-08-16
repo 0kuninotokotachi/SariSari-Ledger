@@ -47,4 +47,25 @@ void main() {
     );
     expect(find.text('Bea'), findsOneWidget);
   });
+
+  testWidgets(
+      'resyncs displayed text when initialQuery changes externally (e.g. a '
+      'Clear Search & Filters action resetting the provider directly)',
+      (tester) async {
+    await _pump(
+      tester,
+      CustomerSearchBar(onChanged: (_) {}, initialQuery: 'zzzznomatch'),
+    );
+    expect(find.text('zzzznomatch'), findsOneWidget);
+
+    // Simulate the parent screen resetting CustomerProvider.searchQuery
+    // without going through this widget's own onChanged/_clear.
+    await _pump(
+      tester,
+      CustomerSearchBar(onChanged: (_) {}, initialQuery: ''),
+    );
+
+    expect(find.text('zzzznomatch'), findsNothing);
+    expect(find.byIcon(Icons.close), findsNothing);
+  });
 }
