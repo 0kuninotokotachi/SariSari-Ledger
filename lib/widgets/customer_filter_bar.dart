@@ -72,6 +72,7 @@ class CustomerFilterBar extends StatelessWidget {
                   DropdownButtonHideUnderline(
                     child: DropdownButton<CustomerSort>(
                       value: sortMode,
+                      borderRadius: BorderRadius.circular(16),
                       items: [
                         for (final sort in CustomerSort.values)
                           DropdownMenuItem(
