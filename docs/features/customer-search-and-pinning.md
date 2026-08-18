@@ -73,7 +73,10 @@ No new screens or routes. Existing screens gained:
 - `CustomerTile` (`lib/widgets/customer_tile.dart`) — gained optional
   `showPinButton` (default `false`) and `onPinToggle` params. When enabled,
   renders a leading pin `IconButton` (filled when pinned, outlined when
-  not). Existing call sites are unaffected since the params default off.
+  not), colored with the theme's `colorScheme.primary` rather than the
+  Material default. Existing call sites are unaffected since the params
+  default off. The pin icon in `CustomerDetailScreen`'s `AppBar` uses the
+  same `colorScheme.primary` for consistency.
 - `PinnedCustomerCard` (`lib/widgets/pinned_customer_card.dart`) — new,
   fixed-width card for the dashboard's pinned row: name + balance, colored
   red/green like `CustomerTile`. Its `InkWell` sets `highlightColor:

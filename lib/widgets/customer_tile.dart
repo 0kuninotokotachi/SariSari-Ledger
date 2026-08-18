@@ -31,7 +31,10 @@ class CustomerTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       leading: showPinButton
           ? IconButton(
-              icon: Icon(isPinned ? Icons.push_pin : Icons.push_pin_outlined),
+              icon: Icon(
+                isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               tooltip: isPinned ? 'Unpin customer' : 'Pin customer',
               onPressed: onPinToggle,
             )
