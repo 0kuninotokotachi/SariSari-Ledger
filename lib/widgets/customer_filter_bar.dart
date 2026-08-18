@@ -45,6 +45,7 @@ class CustomerFilterBar extends StatelessWidget {
                     _filterLabels[filter]!,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  showCheckmark: false,
                   selected: utangFilter == filter,
                   onSelected: (_) => onFilterChanged(filter),
                 ),
