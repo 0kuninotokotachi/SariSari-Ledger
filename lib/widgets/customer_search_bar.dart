@@ -49,13 +49,15 @@ class _CustomerSearchBarState extends State<CustomerSearchBar> {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: _controller,
       builder: (context, value, _) {
+        final colorScheme = Theme.of(context).colorScheme;
         return TextField(
           controller: _controller,
           onChanged: widget.onChanged,
           style: const TextStyle(fontSize: 18),
+          textAlignVertical: TextAlignVertical.center,
           decoration: InputDecoration(
             hintText: 'Search by name or phone',
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
             suffixIcon: value.text.isEmpty
                 ? null
                 : IconButton(
@@ -63,7 +65,22 @@ class _CustomerSearchBarState extends State<CustomerSearchBar> {
                     tooltip: 'Clear search',
                     onPressed: _clear,
                   ),
-            border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: colorScheme.surfaceContainerHighest,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(28),
+              borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
+            ),
           ),
         );
       },

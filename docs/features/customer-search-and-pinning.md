@@ -91,7 +91,11 @@ No new screens or routes. Existing screens gained:
   card lifts without a background box and its shadow stays centered under
   it, in the same place as its resting shadow.
 - `CustomerSearchBar` (`lib/widgets/customer_search_bar.dart`) — new,
-  search-by-name-or-phone text field with a clear button.
+  search-by-name-or-phone text field with a clear button. Styled as a
+  filled, fully-rounded pill (`borderRadius: 28`, `colorScheme
+  .surfaceContainerHighest` fill, no visible border at rest) similar to a
+  Google-style search bar, with slightly reduced vertical padding for a
+  shorter field than a stock `TextField`.
 - `CustomerFilterBar` (`lib/widgets/customer_filter_bar.dart`) — new,
   utang-status filter chips plus a sort selector.
 
