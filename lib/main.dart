@@ -26,6 +26,11 @@ class SariSariLedgerApp extends StatelessWidget {
         title: 'SariSari Ledger',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+          ),
           textTheme: const TextTheme(
             bodyLarge: TextStyle(fontSize: 20),
             bodyMedium: TextStyle(fontSize: 18),
