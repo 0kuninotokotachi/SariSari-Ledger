@@ -9,7 +9,7 @@ Tracks how much each customer owes the store (utang), and the history of loans a
 | Field | Type | Notes |
 |---|---|---|
 | `id` | `Id` | Isar auto-increment. |
-| `name` | `String` | **Unique, case-insensitive** (`@Index(unique: true, caseSensitive: false)`). Enforced so customer names can't collide, in preparation for a future "merge utang across records with the same name" feature. Trimmed before insert. |
+| `name` | `String` | **Unique, case-insensitive** (`@Index(unique: true, caseSensitive: false)`). Enforced so customer names can't collide, in preparation for a future "merge utang across records with the same name" feature. Trimmed before insert. Editable after creation via the customer detail screen's edit dialog, subject to the same uniqueness check (`Customer.id` — not `name` — is the stable identifier used for all lookups and cross-references, e.g. `Transaction.customerId`). |
 | `phoneNumber` | `String?` | Optional. Phone numbers change often in this market, so it is one of several contact channels rather than the primary identifier. |
 | `address` | `String?` | Optional. |
 | `facebookId` | `String?` | Optional. Facebook is often a more stable contact channel than phone number locally. |
@@ -43,7 +43,7 @@ The customer-creation form's required "Date Created" field represents the date t
   - `loadCustomers()` — loads all customers sorted by name.
   - `isNameTaken(name, {excludingId})` — case-insensitive duplicate check via the unique index; used by the add/edit forms.
   - `addCustomerWithInitialUtang(...)` — creates a `Customer` and its opening `utangCredit` `Transaction` atomically. Throws `DuplicateCustomerNameException` on a name collision.
-  - `updateCustomerInfo(...)` — edits contact fields (phone, address, Facebook ID, email, notes) from the customer detail screen.
+  - `updateCustomerInfo(...)` — edits the customer's name and contact fields (phone, address, Facebook ID, email, notes) from the customer detail screen. Takes `required String name`; throws `DuplicateCustomerNameException` on a case-insensitive collision with a different customer, mirroring `addCustomerWithInitialUtang`.
   - `adjustUtang(...)` — internal balance-only helper; not called directly from UI code (see `TransactionProvider`).
 - `TransactionProvider` (`lib/providers/transaction_provider.dart`)
   - `transactionsForCustomer(customerId)` — a customer's transactions, newest first.
@@ -64,7 +64,7 @@ Dashboard (HomeScreen)
 
 - **`AddCustomerScreen`** (`lib/screens/add_customer_screen.dart`) — required: name, amount, created date (loan date), due date. An "Add Details" toggle reveals optional fields: phone, address, Facebook ID, email, notes, and a transaction memo. Submits via `CustomerProvider.addCustomerWithInitialUtang`; duplicate names surface as an inline field error.
 - **`CustomerListScreen`** (`lib/screens/customer_list_screen.dart`) — all customers, name-sorted, each showing their current utang balance (reuses `CustomerTile`). Tapping a row opens `CustomerDetailScreen`.
-- **`CustomerDetailScreen`** (`lib/screens/customer_detail_screen.dart`) — current balance, contact info (with an edit dialog), "Record Payment" / "Add Credit" actions, and the full transaction history for that customer.
+- **`CustomerDetailScreen`** (`lib/screens/customer_detail_screen.dart`) — current balance, contact info (with an edit dialog that can also rename the customer, subject to the same uniqueness check as creation), "Record Payment" / "Add Credit" actions, and the full transaction history for that customer.
 
 ## Widgets
 

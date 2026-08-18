@@ -44,78 +44,124 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   }
 
   Future<void> _openEditDialog(Customer customer) async {
+    final provider = context.read<CustomerProvider>();
+    final nameController = TextEditingController(text: customer.name);
     final phoneController = TextEditingController(text: customer.phoneNumber);
     final addressController = TextEditingController(text: customer.address);
     final facebookController = TextEditingController(text: customer.facebookId);
     final emailController = TextEditingController(text: customer.email);
     final notesController = TextEditingController(text: customer.notes);
 
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Edit Contact Info'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: facebookController,
-                decoration: const InputDecoration(labelText: 'Facebook ID'),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email Address'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: notesController,
-                decoration: const InputDecoration(labelText: 'Notes'),
-                maxLines: 2,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-
-    if (saved != true || !mounted) return;
-
     String? emptyToNull(String value) {
       final trimmed = value.trim();
       return trimmed.isEmpty ? null : trimmed;
     }
 
-    await context.read<CustomerProvider>().updateCustomerInfo(
-          widget.customerId,
-          phoneNumber: emptyToNull(phoneController.text),
-          address: emptyToNull(addressController.text),
-          facebookId: emptyToNull(facebookController.text),
-          email: emptyToNull(emailController.text),
-          notes: emptyToNull(notesController.text),
-        );
+    String? nameError;
+    bool isSaving = false;
+    bool didSave = false;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) {
+          Future<void> attemptSave() async {
+            final trimmedName = nameController.text.trim();
+            if (trimmedName.isEmpty) {
+              setDialogState(() => nameError = 'Please enter a name');
+              return;
+            }
+            setDialogState(() {
+              isSaving = true;
+              nameError = null;
+            });
+            try {
+              await provider.updateCustomerInfo(
+                widget.customerId,
+                name: trimmedName,
+                phoneNumber: emptyToNull(phoneController.text),
+                address: emptyToNull(addressController.text),
+                facebookId: emptyToNull(facebookController.text),
+                email: emptyToNull(emailController.text),
+                notes: emptyToNull(notesController.text),
+              );
+              didSave = true;
+              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+            } on DuplicateCustomerNameException {
+              setDialogState(() {
+                nameError = 'This name is already registered';
+                isSaving = false;
+              });
+            }
+          }
+
+          return AlertDialog(
+            title: const Text('Edit Contact Info'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    autofocus: true,
+                    decoration: InputDecoration(labelText: 'Name *', errorText: nameError),
+                    onChanged: (_) {
+                      if (nameError != null) setDialogState(() => nameError = null);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: phoneController,
+                    decoration: const InputDecoration(labelText: 'Phone Number'),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: addressController,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: facebookController,
+                    decoration: const InputDecoration(labelText: 'Facebook ID'),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: 'Email Address'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: notesController,
+                    decoration: const InputDecoration(labelText: 'Notes'),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: isSaving ? null : () => Navigator.of(dialogContext).pop(),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: isSaving ? null : attemptSave,
+                child: isSaving
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Save'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (!didSave || !mounted) return;
     await _reloadAll();
   }
 
@@ -274,6 +320,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               IconButton(
                 icon: Icon(
                   customer.pinOrder != null ? Icons.push_pin : Icons.push_pin_outlined,
+                  color: customer.pinOrder != null
+                      ? Colors.redAccent.shade100
+                      : Theme.of(context).colorScheme.outline,
                 ),
                 tooltip: customer.pinOrder != null ? 'Unpin customer' : 'Pin customer',
                 onPressed: () => _togglePin(customer),

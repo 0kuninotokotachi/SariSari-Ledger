@@ -168,22 +168,33 @@ class CustomerProvider extends ChangeNotifier {
 
   Future<void> updateCustomerInfo(
     Id customerId, {
+    required String name,
     String? phoneNumber,
     String? address,
     String? facebookId,
     String? email,
     String? notes,
   }) async {
-    await _isar.writeTxn(() async {
-      final customer = await _isar.customers.get(customerId);
-      if (customer == null) return;
-      customer.phoneNumber = phoneNumber;
-      customer.address = address;
-      customer.facebookId = facebookId;
-      customer.email = email;
-      customer.notes = notes;
-      await _isar.customers.put(customer);
-    });
+    final trimmedName = name.trim();
+    if (await isNameTaken(trimmedName, excludingId: customerId)) {
+      throw DuplicateCustomerNameException(trimmedName);
+    }
+
+    try {
+      await _isar.writeTxn(() async {
+        final customer = await _isar.customers.get(customerId);
+        if (customer == null) return;
+        customer.name = trimmedName;
+        customer.phoneNumber = phoneNumber;
+        customer.address = address;
+        customer.facebookId = facebookId;
+        customer.email = email;
+        customer.notes = notes;
+        await _isar.customers.put(customer);
+      });
+    } on IsarError {
+      throw DuplicateCustomerNameException(trimmedName);
+    }
     await loadCustomers();
   }
 

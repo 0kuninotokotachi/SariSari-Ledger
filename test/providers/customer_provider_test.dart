@@ -207,6 +207,67 @@ void main() {
     });
   });
 
+  group('updateCustomerInfo', () {
+    test('renaming to a new unique name persists', () async {
+      await _addCustomer(provider, name: 'Ana');
+      final id = provider.customers.first.id;
+
+      await provider.updateCustomerInfo(id, name: 'Ana Reyes', phoneNumber: '0917-000-0000');
+
+      final updated = provider.customers.firstWhere((c) => c.id == id);
+      expect(updated.name, 'Ana Reyes');
+      expect(updated.phoneNumber, '0917-000-0000');
+    });
+
+    test('renaming to a name taken by a different customer throws and leaves the DB unchanged',
+        () async {
+      await _addCustomer(provider, name: 'Ana');
+      await _addCustomer(provider, name: 'Bea');
+      final ids = {for (final c in provider.customers) c.name: c.id};
+
+      await expectLater(
+        () => provider.updateCustomerInfo(ids['Ana']!, name: 'bea'),
+        throwsA(isA<DuplicateCustomerNameException>()),
+      );
+
+      await provider.loadCustomers();
+      expect(provider.customers.firstWhere((c) => c.id == ids['Ana']!).name, 'Ana');
+    });
+
+    test('renaming a customer to its own current name (different case) succeeds',
+        () async {
+      await _addCustomer(provider, name: 'Ana Reyes');
+      final id = provider.customers.first.id;
+
+      await provider.updateCustomerInfo(id, name: 'ana reyes');
+
+      expect(provider.customers.firstWhere((c) => c.id == id).name, 'ana reyes');
+    });
+
+    test('contact-field-only updates still work alongside the required name param',
+        () async {
+      await _addCustomer(provider, name: 'Ana');
+      final id = provider.customers.first.id;
+
+      await provider.updateCustomerInfo(
+        id,
+        name: 'Ana',
+        phoneNumber: '0917-111-2222',
+        address: '123 Rizal St',
+        facebookId: 'ana.fb',
+        email: 'ana@example.com',
+        notes: 'Regular customer',
+      );
+
+      final updated = provider.customers.firstWhere((c) => c.id == id);
+      expect(updated.phoneNumber, '0917-111-2222');
+      expect(updated.address, '123 Rizal St');
+      expect(updated.facebookId, 'ana.fb');
+      expect(updated.email, 'ana@example.com');
+      expect(updated.notes, 'Regular customer');
+    });
+  });
+
   group('filteredCustomers', () {
     setUp(() async {
       await _addCustomer(

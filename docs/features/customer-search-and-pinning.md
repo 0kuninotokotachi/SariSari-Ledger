@@ -59,8 +59,8 @@ already does.
 
 No new screens or routes. Existing screens gained:
 
-- **`CustomerListScreen`** — a search bar and a filter/sort bar above the
-  list, and a pin toggle on each `CustomerTile`.
+- **`CustomerListScreen`** — a search bar and a two-row filter/sort bar above
+  the list, and a pin toggle on each `CustomerTile`.
 - **`HomeScreen`** — a horizontal, drag-to-reorder "Pinned customers" row
   between the "View Customer List" tile and the "Customers" section, shown
   only when `pinnedCustomers` is non-empty. The full customer list below it
@@ -73,7 +73,10 @@ No new screens or routes. Existing screens gained:
 - `CustomerTile` (`lib/widgets/customer_tile.dart`) — gained optional
   `showPinButton` (default `false`) and `onPinToggle` params. When enabled,
   renders a leading pin `IconButton` (filled when pinned, outlined when
-  not). Existing call sites are unaffected since the params default off.
+  not), colored with the theme's `colorScheme.primary` rather than the
+  Material default. Existing call sites are unaffected since the params
+  default off. The pin icon in `CustomerDetailScreen`'s `AppBar` uses the
+  same `colorScheme.primary` for consistency.
 - `PinnedCustomerCard` (`lib/widgets/pinned_customer_card.dart`) — new,
   fixed-width card for the dashboard's pinned row: name + balance, colored
   red/green like `CustomerTile`. Its `InkWell` sets `highlightColor:
@@ -91,9 +94,17 @@ No new screens or routes. Existing screens gained:
   card lifts without a background box and its shadow stays centered under
   it, in the same place as its resting shadow.
 - `CustomerSearchBar` (`lib/widgets/customer_search_bar.dart`) — new,
-  search-by-name-or-phone text field with a clear button.
+  search-by-name-or-phone text field with a clear button. Styled as a
+  filled, fully-rounded pill (`borderRadius: 28`, `colorScheme
+  .surfaceContainerHighest` fill, no visible border at rest) similar to a
+  Google-style search bar, with slightly reduced vertical padding for a
+  shorter field than a stock `TextField`.
 - `CustomerFilterBar` (`lib/widgets/customer_filter_bar.dart`) — new,
-  utang-status filter chips plus a sort selector.
+  utang-status filter chips plus a sort selector, laid out as two rows: the
+  three filter chips in a plain (non-wrapping) `Row` so they always stay on
+  one line, and below that a right-aligned, pill-styled sort control
+  (rounded `Container` matching the search bar's fill, with a leading sort
+  icon).
 
 ## Design Decisions
 
