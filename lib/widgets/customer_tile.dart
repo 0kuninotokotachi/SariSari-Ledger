@@ -33,7 +33,9 @@ class CustomerTile extends StatelessWidget {
           ? IconButton(
               icon: Icon(
                 isPinned ? Icons.push_pin : Icons.push_pin_outlined,
-                color: Theme.of(context).colorScheme.primary,
+                color: isPinned
+                    ? Colors.redAccent.shade100
+                    : Theme.of(context).colorScheme.outline,
               ),
               tooltip: isPinned ? 'Unpin customer' : 'Pin customer',
               onPressed: onPinToggle,

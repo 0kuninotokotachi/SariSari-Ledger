@@ -320,7 +320,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
               IconButton(
                 icon: Icon(
                   customer.pinOrder != null ? Icons.push_pin : Icons.push_pin_outlined,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: customer.pinOrder != null
+                      ? Colors.redAccent.shade100
+                      : Theme.of(context).colorScheme.outline,
                 ),
                 tooltip: customer.pinOrder != null ? 'Unpin customer' : 'Pin customer',
                 onPressed: () => _togglePin(customer),
