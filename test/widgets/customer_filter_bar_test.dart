@@ -65,4 +65,31 @@ void main() {
 
     expect(selected, CustomerSort.balanceHighToLow);
   });
+
+  testWidgets('filter chips never wrap onto a second line', (tester) async {
+    await _pump(tester);
+    expect(find.byType(Wrap), findsNothing);
+
+    final chipTops = [
+      tester.getTopLeft(find.widgetWithText(FilterChip, 'All')).dy,
+      tester.getTopLeft(find.widgetWithText(FilterChip, 'Has Utang')).dy,
+      tester.getTopLeft(find.widgetWithText(FilterChip, 'Fully Paid')).dy,
+    ];
+    expect(chipTops.toSet().length, 1);
+  });
+
+  testWidgets('sort control sits on its own row below the chips, right-aligned',
+      (tester) async {
+    await _pump(tester);
+
+    final chipsTop = tester.getTopLeft(find.widgetWithText(FilterChip, 'All')).dy;
+    final dropdownTopLeft =
+        tester.getTopLeft(find.byType(DropdownButton<CustomerSort>));
+    final dropdownTopRight =
+        tester.getTopRight(find.byType(DropdownButton<CustomerSort>));
+    final barWidth = tester.getSize(find.byType(CustomerFilterBar)).width;
+
+    expect(dropdownTopLeft.dy, greaterThan(chipsTop));
+    expect(dropdownTopRight.dx, greaterThan(barWidth * 0.5));
+  });
 }

@@ -59,8 +59,8 @@ already does.
 
 No new screens or routes. Existing screens gained:
 
-- **`CustomerListScreen`** — a search bar and a filter/sort bar above the
-  list, and a pin toggle on each `CustomerTile`.
+- **`CustomerListScreen`** — a search bar and a two-row filter/sort bar above
+  the list, and a pin toggle on each `CustomerTile`.
 - **`HomeScreen`** — a horizontal, drag-to-reorder "Pinned customers" row
   between the "View Customer List" tile and the "Customers" section, shown
   only when `pinnedCustomers` is non-empty. The full customer list below it
@@ -97,7 +97,11 @@ No new screens or routes. Existing screens gained:
   Google-style search bar, with slightly reduced vertical padding for a
   shorter field than a stock `TextField`.
 - `CustomerFilterBar` (`lib/widgets/customer_filter_bar.dart`) — new,
-  utang-status filter chips plus a sort selector.
+  utang-status filter chips plus a sort selector, laid out as two rows: the
+  three filter chips in a plain (non-wrapping) `Row` so they always stay on
+  one line, and below that a right-aligned, pill-styled sort control
+  (rounded `Container` matching the search bar's fill, with a leading sort
+  icon).
 
 ## Design Decisions
 

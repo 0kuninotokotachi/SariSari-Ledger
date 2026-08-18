@@ -32,34 +32,61 @@ class CustomerFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Wrap(
-            spacing: 8,
-            children: [
-              for (final filter in UtangFilter.values)
-                FilterChip(
-                  label: Text(_filterLabels[filter]!),
+        Row(
+          children: [
+            for (final filter in UtangFilter.values) ...[
+              Flexible(
+                child: FilterChip(
+                  label: Text(
+                    _filterLabels[filter]!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   selected: utangFilter == filter,
                   onSelected: (_) => onFilterChanged(filter),
                 ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        DropdownButton<CustomerSort>(
-          value: sortMode,
-          items: [
-            for (final sort in CustomerSort.values)
-              DropdownMenuItem(
-                value: sort,
-                child: Text(_sortLabels[sort]!, style: const TextStyle(fontSize: 16)),
               ),
+              if (filter != UtangFilter.values.last) const SizedBox(width: 8),
+            ],
           ],
-          onChanged: (value) {
-            if (value != null) onSortChanged(value);
-          },
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.sort, size: 20, color: colorScheme.primary),
+                  const SizedBox(width: 6),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<CustomerSort>(
+                      value: sortMode,
+                      items: [
+                        for (final sort in CustomerSort.values)
+                          DropdownMenuItem(
+                            value: sort,
+                            child: Text(_sortLabels[sort]!, style: const TextStyle(fontSize: 16)),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) onSortChanged(value);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );
