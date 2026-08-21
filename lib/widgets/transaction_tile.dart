@@ -7,8 +7,6 @@ class TransactionTile extends StatelessWidget {
 
   final Transaction transaction;
 
-  bool get _isCredit => transaction.type == TransactionType.utangCredit;
-
   String get _label {
     switch (transaction.type) {
       case TransactionType.utangCredit:
@@ -20,17 +18,34 @@ class TransactionTile extends StatelessWidget {
     }
   }
 
+  /// `+` for money coming in (a new loan given, or a cash sale), `-` for
+  /// money going out of the till/ledger (a payment reducing utang owed).
+  String get _sign =>
+      transaction.type == TransactionType.utangPayment ? '-' : '+';
+
+  Color _color(BuildContext context) {
+    switch (transaction.type) {
+      case TransactionType.utangCredit:
+        return Colors.red.shade700;
+      case TransactionType.utangPayment:
+        return Colors.green.shade700;
+      case TransactionType.sale:
+        return Theme.of(context).colorScheme.primary;
+    }
+  }
+
   String _formatDate(DateTime date) =>
       '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
-    final color = _isCredit ? Colors.red.shade700 : Colors.green.shade700;
-    final sign = _isCredit ? '+' : '-';
+    final color = _color(context);
+    final sign = _sign;
+    final isCredit = transaction.type == TransactionType.utangCredit;
 
     final subtitleParts = [
       if (transaction.description?.isNotEmpty ?? false) transaction.description!,
-      if (_isCredit && transaction.dueDate != null)
+      if (isCredit && transaction.dueDate != null)
         'Due: ${_formatDate(transaction.dueDate!)}',
     ];
 
@@ -39,7 +54,9 @@ class TransactionTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: color.withValues(alpha: 0.15),
         child: Icon(
-          _isCredit ? Icons.arrow_upward : Icons.arrow_downward,
+          transaction.type == TransactionType.utangPayment
+              ? Icons.arrow_downward
+              : Icons.arrow_upward,
           color: color,
         ),
       ),
