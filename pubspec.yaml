@@ -38,6 +38,7 @@ dependencies:
   isar_community_flutter_libs: ^3.3.2
   path_provider: ^2.1.6
   provider: ^6.1.5+1
+  table_calendar: ^3.2.1
 
 dev_dependencies:
   flutter_test:
