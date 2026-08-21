@@ -33,9 +33,9 @@ Update the relevant plan whenever a feature's behavior changes, the same way
   search/filter/sort on the Customer List screen, and pinning favorite
   customers to the Home dashboard. Covers
   `docs/features/customer-search-and-pinning.md`.
-
-Daily Sales Logging has no plan yet — add `plans/daily-sales-logging.md` once
-`docs/features/daily-sales-logging.md` exists.
+- [Daily Sales Logging](plans/daily-sales-logging.md) — recording cash
+  sales and browsing past days via a calendar. Covers
+  `docs/features/daily-sales-logging.md`.
 
 ## Test types used in this project
 

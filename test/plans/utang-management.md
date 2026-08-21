@@ -200,6 +200,11 @@ File references show where each case belongs.
       correct `customerId`.
 - [ ] Tapping "View Customer List" navigates to `CustomerListScreen`.
 - [ ] Tapping the FAB ("Add Customer") navigates to `AddCustomerScreen`.
+- [ ] Renders a "Daily Sales" nav tile (navigation to `SalesScreen` is
+      **not** exercised here — same Isar-`FutureBuilder`-in-flight deadlock
+      reasoning as `CustomerDetailScreen`, see
+      [test-infrastructure.md](test-infrastructure.md); covered directly in
+      `sales_screen_test.dart` instead).
 
 ## Widgets
 
@@ -215,6 +220,9 @@ File references show where each case belongs.
       date (since `dueDate` is always `null` for payments).
 - [ ] Renders the transaction's `description` when present, and degrades
       gracefully (no crash / sensible fallback) when `null`.
+- [ ] `sale` transactions (see [Daily Sales
+      Logging](../../docs/features/daily-sales-logging.md)) render with a
+      `+` sign and do **not** use `utangPayment`'s green/`-` styling.
 
 ### `UtangSummaryCard` (`test/widgets/utang_summary_card_test.dart`)
 - [ ] Formats `totalUtang` as Philippine peso with 2 decimal places.
