@@ -65,15 +65,25 @@ void main() {
     expect(find.byIcon(Icons.push_pin_outlined), findsNothing);
   });
 
-  testWidgets('pin icon uses the ambient theme primary color', (tester) async {
+  testWidgets('pinned icon uses the soft coral pin color', (tester) async {
     await _pump(
       tester,
       CustomerTile(customer: _customer(pinOrder: 0), showPinButton: true),
     );
 
     final icon = tester.widget<Icon>(find.byIcon(Icons.push_pin));
+    expect(icon.color, Colors.redAccent.shade100);
+  });
+
+  testWidgets('unpinned icon uses the ambient theme outline color', (tester) async {
+    await _pump(
+      tester,
+      CustomerTile(customer: _customer(pinOrder: null), showPinButton: true),
+    );
+
+    final icon = tester.widget<Icon>(find.byIcon(Icons.push_pin_outlined));
     final colorScheme = Theme.of(tester.element(find.byType(CustomerTile))).colorScheme;
-    expect(icon.color, colorScheme.primary);
+    expect(icon.color, colorScheme.outline);
   });
 
   testWidgets('tapping the pin icon invokes onPinToggle, not onTap', (tester) async {
