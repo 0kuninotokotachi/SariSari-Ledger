@@ -57,6 +57,33 @@ No new Isar collection or field. Reuses `Transaction`
   (`Colors.grey.shade600`) instead, so an empty day doesn't read as if it
   had a "real" green result.
 
+  The header's built-in format-toggle button (`2 weeks`/`Month`/`Week`)
+  never actually changed the calendar — `SalesScreen` doesn't track
+  `CalendarFormat` state — so `headerStyle.formatButtonVisible` is set to
+  `false` to hide it. In its place, the `Scaffold`'s `AppBar` gets a
+  "Summary" action (an `OutlinedButton.icon` with a `StadiumBorder`, so it
+  visibly reads as a tappable button rather than plain text) that pushes
+  `MonthlySalesSummaryScreen` for the calendar's currently focused month.
+  It lives in the AppBar next to the "Daily Sales" title — not inside the
+  calendar's own month/year header row — so it stays in a fixed place
+  regardless of which month is showing.
+- **`MonthlySalesSummaryScreen`**
+  (`lib/screens/monthly_sales_summary_screen.dart`) — pushed from
+  `SalesScreen`'s "Summary" button, initialized to the calendar's
+  currently focused month. Shows that month's total sales (green if > 0,
+  gray if zero, same rule as `SalesScreen`'s Total) and a
+  `WeekdaySalesBarChart` of **average** sales per day of the week
+  (Sun-Sat). It owns independent month state with its own prev/next
+  arrows, re-querying `TransactionProvider.salesTotalsForMonth` on every
+  month change — it does not share `SalesScreen`'s `_monthTotals`.
+
+  Averages, not sums, so weekdays are comparable regardless of how many
+  Mondays vs. Fridays a given month has. For every day in the month
+  (whether or not it had a sale) `salesTotalsForMonth`'s per-day amount
+  (or 0) is bucketed by `DateTime.weekday` and divided by that weekday's
+  occurrence count — a weekday with zero sales all month still counts
+  toward the denominator, so it correctly averages down.
+
 ## Widgets
 
 - `TransactionTile` (`lib/widgets/transaction_tile.dart`) — reused as-is
@@ -67,6 +94,15 @@ No new Isar collection or field. Reuses `Transaction`
   inheriting `utangPayment`'s styling by accident. This only affects
   `sale` rows — `CustomerDetailScreen`'s existing
   `utangCredit`/`utangPayment` rendering is unchanged.
+- `WeekdaySalesBarChart` (`lib/widgets/weekday_sales_bar_chart.dart`) —
+  a hand-rolled (no chart package, per `CLAUDE.md`'s
+  minimize-external-packages guidance) pedometer-style bar chart: seven
+  bars (Sun-Sat), each a rounded-top `Container` sized relative to the
+  week's max value, a `₱`-formatted value label above (blank when the
+  average is 0), and a weekday label below colored red for Sat/Sun to
+  match `SalesScreen`'s calendar. Takes a pre-aggregated
+  `Map<int, double>` (`DateTime.weekday` -> average) — it has no
+  provider/query dependency of its own.
 
 ## Design Decisions
 

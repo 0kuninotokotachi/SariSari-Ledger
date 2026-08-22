@@ -35,6 +35,25 @@ File references show where each case belongs.
 - [ ] Excludes `utangCredit`/`utangPayment` transactions.
 - [ ] Returns `{}` for a month with no sales.
 
+## `WeekdaySalesBarChart` (`test/widgets/weekday_sales_bar_chart_test.dart`)
+
+Pure presentational widget (no Isar/provider dependency — takes a
+pre-aggregated `Map<int, double>`), so unlike `SalesScreen` below it's
+fully covered by fast widget tests:
+
+- [x] Renders all 7 bars Sun-Sat in order, each with a `₱`-prefixed
+      average label and bar height increasing with the average amount;
+      the highest average fills the full chart height.
+- [x] Sun/Sat weekday labels render in red (`Colors.red.shade400`),
+      Mon-Fri in `Colors.black87`.
+- [x] A zero-average weekday renders a gray (`Colors.grey.shade300`)
+      stub bar with a blank amount label, instead of green.
+- [x] An all-zero-average month (the `maxAmount <= 0` guard) renders every
+      bar at the minimum stub height with no `NaN`/crash — regression
+      case for what dividing by a zero `maxAverage` would otherwise do.
+- [x] A weekday missing from the map (not just present-with-zero) also
+      falls back to a zero-average stub bar.
+
 ## `SalesScreen` (`test/screens/sales_screen_test.dart` — blocked, see below)
 
 **Blocked on the Isar/`FutureBuilder` widget-test hang documented in
@@ -46,9 +65,14 @@ hang already known for `CustomerDetailScreen`, except worse: the query
 never completed even after `pump()`, a bounded `pump(duration)`, **and** a
 `pumpAndSettle()` bounded to 5 real seconds, and `tearDownAll` then hung
 for the full 12-minute test timeout closing Isar. This isn't a bug in
-`SalesScreen`'s own logic — every case below is already covered at the
-provider level in `TransactionProvider`'s section above, which runs fast
-and green with no widgets involved.
+`SalesScreen`'s own logic — every data-shape case below is already
+covered at the provider level in `TransactionProvider`'s section above,
+which runs fast and green with no widgets involved.
+`MonthlySalesSummaryScreen` fires the same kind of Isar query from
+`initState()` and is blocked for the same reason; its weekday-averaging
+math and its bar rendering are covered separately (by inspection for the
+former — it's a short, direct loop — and by `WeekdaySalesBarChart`'s
+tests above for the latter).
 
 No automated widget coverage until the underlying issue is root-caused.
 Verify manually via `flutter run` instead:
@@ -74,6 +98,13 @@ Verify manually via `flutter run` instead:
       smaller than the date-number grid below.
 - [ ] Saturday/Sunday render in a distinct color (red) from weekdays, in
       both the day-of-week row and the date-number grid.
+- [ ] The AppBar's "Summary" button (top-right, next to the "Daily Sales"
+      title, drawn with a rounded/stadium outline so it reads as a
+      button) pushes `MonthlySalesSummaryScreen` for the calendar's
+      currently focused month — not necessarily the selected day's month.
+- [ ] On `MonthlySalesSummaryScreen`: total sales for the month is green
+      when > 0 and gray when exactly `₱0.00`; the prev/next month arrows
+      reload both the total and the bar chart for the new month.
 
 ## Known behaviors worth a second opinion
 

@@ -5,6 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../models/transaction.dart';
 import '../providers/transaction_provider.dart';
 import '../widgets/transaction_tile.dart';
+import 'monthly_sales_summary_screen.dart';
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({super.key});
@@ -65,6 +66,14 @@ class _SalesScreenState extends State<SalesScreen> {
 
   String _formatDate(DateTime date) =>
       '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+
+  void _openMonthlySummary() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MonthlySalesSummaryScreen(initialMonth: _focusedMonth),
+      ),
+    );
+  }
 
   Future<void> _openAddSaleDialog() async {
     final amountController = TextEditingController();
@@ -155,7 +164,22 @@ class _SalesScreenState extends State<SalesScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daily Sales')),
+      appBar: AppBar(
+        title: const Text('Daily Sales'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: OutlinedButton.icon(
+              onPressed: _openMonthlySummary,
+              icon: const Icon(Icons.bar_chart, size: 18),
+              label: const Text('Summary'),
+              style: OutlinedButton.styleFrom(
+                shape: const StadiumBorder(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           TableCalendar<double>(
@@ -168,6 +192,7 @@ class _SalesScreenState extends State<SalesScreen> {
             onPageChanged: _onPageChanged,
             daysOfWeekHeight: 28,
             headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
               titleCentered: true,
               titleTextStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
