@@ -166,7 +166,18 @@ class _SalesScreenState extends State<SalesScreen> {
             eventLoader: (day) => _totalFor(day) > 0 ? [_totalFor(day)] : [],
             onDaySelected: _onDaySelected,
             onPageChanged: _onPageChanged,
+            daysOfWeekHeight: 28,
+            headerStyle: const HeaderStyle(
+              titleCentered: true,
+              titleTextStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+              weekendStyle: TextStyle(fontSize: 12, color: Colors.red.shade400),
+            ),
             calendarStyle: CalendarStyle(
+              defaultTextStyle: const TextStyle(fontSize: 15),
+              weekendTextStyle: TextStyle(fontSize: 15, color: Colors.red.shade400),
               todayDecoration: BoxDecoration(
                 color: colorScheme.primary.withValues(alpha: 0.3),
                 shape: BoxShape.circle,

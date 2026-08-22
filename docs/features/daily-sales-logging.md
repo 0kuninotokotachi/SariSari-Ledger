@@ -45,6 +45,12 @@ No new Isar collection or field. Reuses `Transaction`
   a synchronous `DateTime -> List<T>` callback and needs the month's data
   already resolved.
 
+  Calendar styling: `daysOfWeekHeight: 28` (the package's 16px default
+  clips the dow-label row), a bold, horizontally centered
+  (`titleCentered: true`) month/year title, dow labels sized smaller than
+  the date-number grid, and Sat/Sun colored red in both the dow row and
+  the date grid to read as weekend at a glance.
+
 ## Widgets
 
 - `TransactionTile` (`lib/widgets/transaction_tile.dart`) — reused as-is

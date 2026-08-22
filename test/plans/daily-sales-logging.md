@@ -65,6 +65,11 @@ Verify manually via `flutter run` instead:
       sales/total, independent of the previously selected day's data.
 - [ ] A day with a recorded sale shows a calendar marker; a day without
       one does not.
+- [ ] The calendar's month/year title is bold and horizontally centered;
+      the day-of-week row isn't clipped, and its labels are visibly
+      smaller than the date-number grid below.
+- [ ] Saturday/Sunday render in a distinct color (red) from weekdays, in
+      both the day-of-week row and the date-number grid.
 
 ## Known behaviors worth a second opinion
 
