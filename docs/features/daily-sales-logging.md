@@ -51,15 +51,22 @@ No new Isar collection or field. Reuses `Transaction`
   the date-number grid, and Sat/Sun colored red in both the dow row and
   the date grid to read as weekend at a glance.
 
+  The "Total: …" header text is green (`Colors.green.shade700`, matching
+  `TransactionTile`'s sale/payment color) only when the selected day's
+  total is greater than zero; a ₱0.00 day is gray
+  (`Colors.grey.shade600`) instead, so an empty day doesn't read as if it
+  had a "real" green result.
+
 ## Widgets
 
 - `TransactionTile` (`lib/widgets/transaction_tile.dart`) — reused as-is
   from Utang Management, but its color/sign logic was corrected from a
   binary `_isCredit` check to a 3-way switch over `TransactionType` so
-  `sale` renders correctly (`+`, a neutral/primary color) instead of
-  inheriting `utangPayment`'s green `-` styling. This only affects `sale`
-  rows — `CustomerDetailScreen`'s existing `utangCredit`/`utangPayment`
-  rendering is unchanged.
+  `sale` renders correctly (`+`, `Colors.green.shade700` — the same green
+  `utangPayment` uses, since both represent "good" money) instead of
+  inheriting `utangPayment`'s styling by accident. This only affects
+  `sale` rows — `CustomerDetailScreen`'s existing
+  `utangCredit`/`utangPayment` rendering is unchanged.
 
 ## Design Decisions
 

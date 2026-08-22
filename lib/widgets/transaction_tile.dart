@@ -30,7 +30,7 @@ class TransactionTile extends StatelessWidget {
       case TransactionType.utangPayment:
         return Colors.green.shade700;
       case TransactionType.sale:
-        return Theme.of(context).colorScheme.primary;
+        return Colors.green.shade700;
     }
   }
 

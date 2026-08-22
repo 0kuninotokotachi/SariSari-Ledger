@@ -207,7 +207,9 @@ class _SalesScreenState extends State<SalesScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
+                    color: _totalFor(_selectedDay) > 0
+                        ? Colors.green.shade700
+                        : Colors.grey.shade600,
                   ),
                 ),
               ],

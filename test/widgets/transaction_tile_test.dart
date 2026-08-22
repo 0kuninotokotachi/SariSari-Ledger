@@ -38,8 +38,7 @@ void main() {
     expect(icon.color, Colors.green.shade700);
   });
 
-  testWidgets('sale renders the theme primary color, with a + sign and no due date',
-      (tester) async {
+  testWidgets('sale renders green, with a + sign and no due date', (tester) async {
     final transaction = Transaction()
       ..type = TransactionType.sale
       ..amount = 50
@@ -49,8 +48,7 @@ void main() {
     expect(find.text('+₱50.00'), findsOneWidget);
     expect(find.textContaining('Due:'), findsNothing);
     final icon = tester.widget<Icon>(find.byIcon(Icons.arrow_upward));
-    final colorScheme = Theme.of(tester.element(find.byType(TransactionTile))).colorScheme;
-    expect(icon.color, colorScheme.primary);
+    expect(icon.color, Colors.green.shade700);
   });
 
   testWidgets('renders the description when present', (tester) async {

@@ -54,9 +54,13 @@ No automated widget coverage until the underlying issue is root-caused.
 Verify manually via `flutter run` instead:
 
 - [ ] Shows "No sales recorded for this day." when the selected day
-      (defaults to today) has no sales; total shows `₱0.00`.
+      (defaults to today) has no sales; total shows `₱0.00` in gray
+      (`Colors.grey.shade600`), not green.
+- [ ] A day with a nonzero total shows it in green
+      (`Colors.green.shade700`).
 - [ ] Adding a sale via the "Add Sale" dialog with a valid amount adds it
-      to the day's list and updates the header total.
+      to the day's list and updates the header total (turning it green if
+      it was previously gray).
 - [ ] The "Add Sale" dialog's Save button is inert (dialog stays open)
       when amount is blank, non-numeric, zero, or negative.
 - [ ] The "Add Sale" dialog's date field defaults to the currently
