@@ -99,6 +99,25 @@ Notes:
   `CustomerDetailScreen`; test its own behavior directly in
   `customer_detail_screen_test.dart` instead (still unwritten as of this
   note), where per-test Isar setup/teardown can be tuned in isolation.
+- **The same class of hang reproduces even without navigation, on a screen
+  pumped directly** — confirmed while building `SalesScreen`
+  (`docs/features/daily-sales-logging.md`), which fires an Isar query from
+  `initState()` into a `FutureBuilder`, same shape as
+  `CustomerDetailScreen`'s `_transactionsFuture`. Pumping it directly (no
+  `Navigator.push`) still left the `FutureBuilder`'s
+  `CircularProgressIndicator` showing after `pump()`, a further bounded
+  `pump(duration)`, **and** a `pumpAndSettle()` bounded to 5 real seconds —
+  the underlying query never completed at all, not just slowly. `tearDownAll`
+  (`DatabaseService.instance.close()`) then hung for the full 12-minute test
+  timeout. This means the issue isn't specific to navigation transitions or
+  to test-teardown timing — it's the general shape of "widget test pumps a
+  screen whose `initState` starts an Isar query feeding a `FutureBuilder`"
+  that's unsafe here, on any screen, not just `CustomerDetailScreen`. Until
+  root-caused, **do not widget-test a screen's Isar-backed `FutureBuilder`
+  content at all** — cover that screen's query/aggregation logic at the
+  provider level instead (fast, reliable, already proven — see
+  `customer_provider_test.dart` and `transaction_provider_test.dart`), and
+  verify the screen itself manually via `flutter run`.
 - Screens that open a `showDatePicker` dialog need `pumpAndSettle()` after
   tapping the date field, then locate the picker's "OK" button
   (`find.text('OK')` in Material's default date picker) to confirm a date.

@@ -45,6 +45,10 @@ The customer-creation form's required "Date Created" field represents the date t
   - `addCustomerWithInitialUtang(...)` — creates a `Customer` and its opening `utangCredit` `Transaction` atomically. Throws `DuplicateCustomerNameException` on a name collision.
   - `updateCustomerInfo(...)` — edits the customer's name and contact fields (phone, address, Facebook ID, email, notes) from the customer detail screen. Takes `required String name`; throws `DuplicateCustomerNameException` on a case-insensitive collision with a different customer, mirroring `addCustomerWithInitialUtang`.
   - `adjustUtang(...)` — internal balance-only helper; not called directly from UI code (see `TransactionProvider`).
+  - `deleteCustomer(customerId)` — deletes the `Customer` row. Not wired to
+    any screen yet. Does **not** cascade-delete that customer's
+    `Transaction` rows, leaving orphans with a dangling `customerId` — a
+    known gap, not by design.
 - `TransactionProvider` (`lib/providers/transaction_provider.dart`)
   - `transactionsForCustomer(customerId)` — a customer's transactions, newest first.
   - `addUtangCredit(...)` / `addUtangPayment(...)` — record a new loan or repayment and update `Customer.totalUtang` in the same write transaction.
@@ -62,6 +66,11 @@ Dashboard (HomeScreen)
 └── tap a customer in the dashboard list → CustomerDetailScreen
 ```
 
+- **`HomeScreen`** (`lib/screens/home_screen.dart`) — dashboard: a
+  `UtangSummaryCard` header, the "View Customer List" nav tile, and (when
+  non-empty) a pinned-customers row (see
+  [Customer Search & Pinning](customer-search-and-pinning.md)) above the
+  full customer list.
 - **`AddCustomerScreen`** (`lib/screens/add_customer_screen.dart`) — required: name, amount, created date (loan date), due date. An "Add Details" toggle reveals optional fields: phone, address, Facebook ID, email, notes, and a transaction memo. Submits via `CustomerProvider.addCustomerWithInitialUtang`; duplicate names surface as an inline field error.
 - **`CustomerListScreen`** (`lib/screens/customer_list_screen.dart`) — all customers, name-sorted, each showing their current utang balance (reuses `CustomerTile`). Tapping a row opens `CustomerDetailScreen`.
 - **`CustomerDetailScreen`** (`lib/screens/customer_detail_screen.dart`) — current balance, contact info (with an edit dialog that can also rename the customer, subject to the same uniqueness check as creation), "Record Payment" / "Add Credit" actions, and the full transaction history for that customer.
@@ -70,3 +79,7 @@ Dashboard (HomeScreen)
 
 - `CustomerTile` (`lib/widgets/customer_tile.dart`) — name + balance row; takes an optional `onTap` so it can be reused for both browsing (list/dashboard) and navigation to detail.
 - `TransactionTile` (`lib/widgets/transaction_tile.dart`) — a single loan/repayment row, color-coded (loans red, repayments green), showing the due date for loans.
+- `UtangSummaryCard` (`lib/widgets/utang_summary_card.dart`) — `HomeScreen`'s
+  dashboard header: total outstanding utang and how many of the store's
+  customers currently owe money (`CustomerProvider.totalUtang` /
+  `.customersWithUtangCount`).

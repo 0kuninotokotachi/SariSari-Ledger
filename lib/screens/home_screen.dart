@@ -8,6 +8,7 @@ import '../widgets/utang_summary_card.dart';
 import 'add_customer_screen.dart';
 import 'customer_detail_screen.dart';
 import 'customer_list_screen.dart';
+import 'sales_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -38,11 +39,26 @@ class HomeScreen extends StatelessWidget {
             ),
           );
 
+          final salesNavTile = Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Card(
+              child: ListTile(
+                leading: const Icon(Icons.point_of_sale),
+                title: const Text('Daily Sales', style: TextStyle(fontSize: 18)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SalesScreen()),
+                ),
+              ),
+            ),
+          );
+
           if (provider.customers.isEmpty) {
             return Column(
               children: [
                 summary,
                 listNavTile,
+                salesNavTile,
                 const Expanded(
                   child: Center(
                     child: Text(
@@ -62,6 +78,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               summary,
               listNavTile,
+              salesNavTile,
               if (pinned.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 const Padding(

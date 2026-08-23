@@ -136,6 +136,8 @@ automated coverage. Worth a dedicated follow-up.
       (regression check — existing layout unaffected).
 - [x] Outline pin icon when `showPinButton: true` and `pinOrder == null`;
       filled when non-null.
+- [x] Pinned icon color is `Colors.redAccent.shade100`; unpinned icon color
+      is the ambient theme's `colorScheme.outline`.
 - [x] Tapping the pin icon invokes `onPinToggle`, not `onTap`.
 
 ### `PinnedCustomerCard` (`test/widgets/pinned_customer_card_test.dart`)

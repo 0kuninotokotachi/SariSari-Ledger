@@ -49,6 +49,15 @@ void main() {
     expect(find.byType(PinnedCustomersRow), findsNothing);
   });
 
+  testWidgets('renders a Daily Sales nav tile', (tester) async {
+    // Navigation into SalesScreen is intentionally not exercised here, for
+    // the same Isar-FutureBuilder-in-flight reason CustomerDetailScreen is
+    // excluded above — see sales_screen_test.dart instead.
+    await _pumpHome(tester, [_customer(1, 'Ana')]);
+
+    expect(find.text('Daily Sales'), findsOneWidget);
+  });
+
   testWidgets('renders one PinnedCustomerCard per pinned customer, in pinOrder',
       (tester) async {
     await _pumpHome(tester, [
